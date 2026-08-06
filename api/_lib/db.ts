@@ -1,5 +1,17 @@
-import { sql } from "@vercel/postgres";
 import type { Project, ProductResult } from "../../src/lib/types.js";
+import { sql } from "@vercel/postgres";
+
+// The Vercel/Neon Storage integration was set up with "POSTGRES_URL" as its
+// own variable prefix, so every var it injects is double-prefixed
+// (POSTGRES_URL_POSTGRES_URL, POSTGRES_URL_PGHOST, ...) instead of plain
+// POSTGRES_URL / PGHOST / etc. Those integration-managed vars can't be
+// renamed from the dashboard, so alias the one @vercel/postgres actually
+// reads (lazily, on first query) before anything calls `sql`. This file is
+// imported ahead of any `sql` usage in every handler, so this side effect
+// always runs before a connection is ever opened.
+if (!process.env.POSTGRES_URL && process.env.POSTGRES_URL_POSTGRES_URL) {
+  process.env.POSTGRES_URL = process.env.POSTGRES_URL_POSTGRES_URL;
+}
 
 let schemaReady: Promise<unknown> | null = null;
 
