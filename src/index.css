@@ -1,0 +1,144 @@
+:root {
+  color-scheme: light dark;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #0f1115;
+  color: #e8e8ea;
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+header h1 {
+  margin: 0 0 6px;
+  font-size: 1.8rem;
+}
+
+.subtitle {
+  color: #a3a3ab;
+  margin: 0 0 24px;
+  max-width: 640px;
+}
+
+.input-section textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: #1a1c22;
+  color: #e8e8ea;
+  border: 1px solid #2c2f38;
+  border-radius: 8px;
+  padding: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9rem;
+  resize: vertical;
+}
+
+.actions-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+button {
+  background: #ff9900;
+  color: #131313;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #ff6b6b;
+}
+
+.results-section {
+  margin-top: 32px;
+}
+
+.results-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.product-chip {
+  display: flex;
+  flex-direction: column;
+  background: #1a1c22;
+  border: 1px solid #2c2f38;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  min-width: 200px;
+}
+
+.product-chip-error {
+  border-color: #ff6b6b;
+}
+
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid #2c2f38;
+  border-radius: 8px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.85rem;
+}
+
+th, td {
+  border-bottom: 1px solid #2c2f38;
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #1a1c22;
+  position: sticky;
+  top: 0;
+}
+
+.body-cell {
+  max-width: 380px;
+  white-space: pre-wrap;
+}
+
+select {
+  background: #1a1c22;
+  color: #e8e8ea;
+  border: 1px solid #2c2f38;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
