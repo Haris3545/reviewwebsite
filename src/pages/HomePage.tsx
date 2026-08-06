@@ -5,6 +5,7 @@ import { downloadPdf } from "../lib/pdf";
 import { createProject, getProject, updateProject } from "../lib/projectsApi";
 import { useLoadingStages } from "../lib/useLoadingStages";
 import LoadingBar from "../components/LoadingBar";
+import Diagnostics from "../components/Diagnostics";
 
 const DOMAINS = [
   { value: "amazon.co.uk", label: "amazon.co.uk" },
@@ -53,10 +54,17 @@ export default function HomePage() {
     return allReviews.filter((r) => r.productUrl === productFilter);
   }, [allReviews, productFilter]);
 
-  const { progress: loadingProgress, text: loadingText } = useLoadingStages(
-    loading,
-    loadingComplete,
-  );
+  const {
+    progress: loadingProgress,
+    text: loadingText,
+    secondsRemaining: loadingSecondsRemaining,
+  } = useLoadingStages(loading, loadingComplete);
+
+  const diagnostics = [
+    error && { label: "Fetch reviews", message: error },
+    searchError && { label: "Search", message: searchError },
+    saveError && { label: "Save project", message: saveError },
+  ].filter((d): d is { label: string; message: string } => Boolean(d));
 
   // Deep-link from the Projects page: /?project=<id> loads a saved project
   // back into the form so it can be reviewed or re-fetched and updated.
@@ -242,9 +250,14 @@ export default function HomePage() {
             >
               {loading ? "Fetching…" : `Fetch reviews${urls.length ? ` (${urls.length})` : ""}`}
             </button>
-            {error && <span className="error">{error}</span>}
           </div>
-          {loading && <LoadingBar progress={loadingProgress} text={loadingText} />}
+          {loading && (
+            <LoadingBar
+              progress={loadingProgress}
+              text={loadingText}
+              secondsRemaining={loadingSecondsRemaining}
+            />
+          )}
         </section>
       )}
 
@@ -269,7 +282,6 @@ export default function HomePage() {
               {searching ? "Searching…" : "Search"}
             </button>
           </div>
-          {searchError && <p className="error">{searchError}</p>}
           <p className="hint">
             Matches products by what they actually are, not just the words in the title — so a
             search for "delonghi heaters" also picks up listings without "heater" in the name.
@@ -303,9 +315,14 @@ export default function HomePage() {
                 >
                   {loading ? "Fetching…" : `Fetch reviews for selected (${selectedAsins.size})`}
                 </button>
-                {error && <span className="error">{error}</span>}
               </div>
-              {loading && <LoadingBar progress={loadingProgress} text={loadingText} />}
+              {loading && (
+                <LoadingBar
+                  progress={loadingProgress}
+                  text={loadingText}
+                  secondsRemaining={loadingSecondsRemaining}
+                />
+              )}
             </div>
           )}
         </section>
@@ -406,7 +423,6 @@ export default function HomePage() {
             ) : (
               <button onClick={() => setShowSaveForm(true)}>Save as project</button>
             )}
-            {saveError && <span className="error">{saveError}</span>}
             {savedMessage && (
               <span className="save-confirm">
                 {savedMessage} <a href="/projects">View in Projects</a>
@@ -415,6 +431,8 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
+      <Diagnostics items={diagnostics} />
     </>
   );
 }

@@ -8,21 +8,34 @@ const STAGE2_TEXTS = [
   "Almost there…",
 ];
 const DONE_TEXT = "Done — compiling results…";
+const OVERRUN_TEXT = "Finishing up…";
 
 const STAGE1_DURATION = 1800;
 const STAGE1_TARGET = 55;
 const STAGE2_DURATION = 7000;
 const STAGE2_TARGET = 92;
 const STAGE2_TEXT_INTERVAL = 1800;
+const TOTAL_ESTIMATED_MS = STAGE1_DURATION + STAGE2_DURATION;
+
+interface LoadingStageState {
+  progress: number;
+  text: string;
+  secondsRemaining: number;
+}
+
+const INITIAL_STATE: LoadingStageState = {
+  progress: 0,
+  text: STAGE1_TEXT,
+  secondsRemaining: Math.ceil(TOTAL_ESTIMATED_MS / 1000),
+};
 
 // Simulated two-stage progress: the backend genuinely does try a fast direct
 // fetch first and only falls back to the slower path on failure, but since
 // /api/reviews is a single request/response (no streaming), the frontend
-// can't know the real per-URL stage. This approximates it on a timeline
-// that matches how the backend is actually paced.
+// can't know the real per-URL stage. This approximates it, including a
+// countdown, on a timeline that matches how the backend is actually paced.
 export function useLoadingStages(active: boolean, complete: boolean) {
-  const [progress, setProgress] = useState(0);
-  const [text, setText] = useState(STAGE1_TEXT);
+  const [state, setState] = useState<LoadingStageState>(INITIAL_STATE);
   const frameRef = useRef<number>();
   const startRef = useRef(0);
   const stage2StartRef = useRef<number | null>(null);
@@ -30,8 +43,7 @@ export function useLoadingStages(active: boolean, complete: boolean) {
 
   useEffect(() => {
     if (!active) {
-      setProgress(0);
-      setText(STAGE1_TEXT);
+      setState(INITIAL_STATE);
       stage2StartRef.current = null;
       textIndexRef.current = 0;
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
@@ -44,25 +56,31 @@ export function useLoadingStages(active: boolean, complete: boolean) {
 
     function tick(now: number) {
       const elapsed = now - startRef.current;
+      const secondsRemaining = Math.max(0, Math.ceil((TOTAL_ESTIMATED_MS - elapsed) / 1000));
+
       if (elapsed < STAGE1_DURATION) {
-        setProgress((STAGE1_TARGET * elapsed) / STAGE1_DURATION);
-        setText(STAGE1_TEXT);
+        setState({
+          progress: (STAGE1_TARGET * elapsed) / STAGE1_DURATION,
+          text: STAGE1_TEXT,
+          secondsRemaining,
+        });
       } else {
         if (stage2StartRef.current === null) {
           stage2StartRef.current = now;
-          setText(STAGE2_TEXTS[0]);
         }
         const elapsed2 = now - stage2StartRef.current;
-        const p =
+        const progress =
           STAGE1_TARGET +
           Math.min(1, elapsed2 / STAGE2_DURATION) * (STAGE2_TARGET - STAGE1_TARGET);
-        setProgress(p);
 
         const idx = Math.min(STAGE2_TEXTS.length - 1, Math.floor(elapsed2 / STAGE2_TEXT_INTERVAL));
-        if (idx !== textIndexRef.current) {
-          textIndexRef.current = idx;
-          setText(STAGE2_TEXTS[idx]);
-        }
+        textIndexRef.current = idx;
+
+        setState({
+          progress,
+          text: secondsRemaining > 0 ? STAGE2_TEXTS[idx] : OVERRUN_TEXT,
+          secondsRemaining,
+        });
       }
       frameRef.current = requestAnimationFrame(tick);
     }
@@ -74,7 +92,7 @@ export function useLoadingStages(active: boolean, complete: boolean) {
   }, [active]);
 
   if (complete) {
-    return { progress: 100, text: DONE_TEXT };
+    return { progress: 100, text: DONE_TEXT, secondsRemaining: 0 };
   }
-  return { progress, text };
+  return state;
 }
