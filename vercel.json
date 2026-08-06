@@ -4,5 +4,8 @@
   "functions": {
     "api/reviews.ts": { "maxDuration": 60 },
     "api/search.ts": { "maxDuration": 60 }
-  }
+  },
+  "rewrites": [
+    { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
+  ]
 }

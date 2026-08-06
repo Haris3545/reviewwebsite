@@ -35,3 +35,24 @@ export interface SearchResultItem {
 export interface SearchResponse {
   items: SearchResultItem[];
 }
+
+export interface Project {
+  id: string;
+  name: string;
+  mode: "links" | "search";
+  urls: string[];
+  searchQuery: string | null;
+  searchDomain: string | null;
+  results: ProductResult[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectSummary {
+  id: string;
+  name: string;
+  mode: "links" | "search";
+  productCount: number;
+  reviewCount: number;
+  updatedAt: string;
+}
