@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { sql } from "@vercel/postgres";
 import { randomUUID } from "node:crypto";
-import { ensureSchema, rowToProject } from "../_lib/db.js";
+import { ensureSchema, rowToProject } from "./_lib/db.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
