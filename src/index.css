@@ -7,6 +7,9 @@
   --mustard-dark: #ff8812;
   --mustard-light: #ffedbb;
 
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
   font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -35,6 +38,7 @@ body {
   border: 3px solid var(--mustard);
   border-radius: 4px;
   padding: 40px 44px 56px;
+  animation: fadeInUp 400ms var(--ease-out) both;
 }
 
 header .eyebrow {
@@ -88,6 +92,9 @@ header h1 {
   font-size: 0.95rem;
   color: #8a8a8a;
   cursor: pointer;
+  transition:
+    color 160ms var(--ease-out),
+    border-bottom-color 160ms var(--ease-out);
 }
 
 .tab.active {
@@ -111,6 +118,7 @@ header h1 {
   font-family: inherit;
   font-size: 0.92rem;
   resize: vertical;
+  transition: border-color 160ms var(--ease-out);
 }
 
 .input-section textarea:focus,
@@ -153,6 +161,11 @@ button {
   font-weight: 500;
   font-size: 0.9rem;
   cursor: pointer;
+  transition:
+    transform 140ms var(--ease-out),
+    background-color 140ms var(--ease-out),
+    border-color 140ms var(--ease-out),
+    opacity 140ms var(--ease-out);
 }
 
 button.primary {
@@ -169,6 +182,10 @@ button:hover:not(:disabled) {
   background: var(--mustard-light);
 }
 
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
 button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -181,6 +198,7 @@ button:disabled {
 
 .search-results {
   margin-top: 18px;
+  animation: fadeInUp 300ms var(--ease-out) both;
 }
 
 .search-list {
@@ -194,7 +212,17 @@ button:disabled {
 
 .search-list li {
   border-bottom: 1px solid #eee;
+  opacity: 0;
+  transform: translateY(6px);
+  animation: fadeInUp 250ms var(--ease-out) forwards;
 }
+
+.search-list li:nth-child(1) { animation-delay: 0ms; }
+.search-list li:nth-child(2) { animation-delay: 30ms; }
+.search-list li:nth-child(3) { animation-delay: 60ms; }
+.search-list li:nth-child(4) { animation-delay: 90ms; }
+.search-list li:nth-child(5) { animation-delay: 120ms; }
+.search-list li:nth-child(n+6) { animation-delay: 150ms; }
 
 .search-list li:last-child {
   border-bottom: none;
@@ -207,6 +235,7 @@ button:disabled {
   padding: 10px 14px;
   font-size: 0.88rem;
   cursor: pointer;
+  transition: background-color 120ms var(--ease-out);
 }
 
 .search-list label:hover {
@@ -226,6 +255,7 @@ button:disabled {
 
 .results-section {
   margin-top: 36px;
+  animation: fadeInUp 350ms var(--ease-out) both;
 }
 
 .results-meta {
@@ -244,7 +274,15 @@ button:disabled {
   padding: 8px 12px;
   font-size: 0.85rem;
   min-width: 200px;
+  opacity: 0;
+  transform: translateY(6px);
+  animation: fadeInUp 250ms var(--ease-out) forwards;
 }
+
+.results-meta .chip:nth-child(1) { animation-delay: 0ms; }
+.results-meta .chip:nth-child(2) { animation-delay: 40ms; }
+.results-meta .chip:nth-child(3) { animation-delay: 80ms; }
+.results-meta .chip:nth-child(n+4) { animation-delay: 120ms; }
 
 .chip-error {
   border-color: #c0392b;
@@ -307,4 +345,32 @@ select {
   border-radius: 4px;
   padding: 8px 10px;
   font-family: inherit;
+  transition: border-color 160ms var(--ease-out);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-frame,
+  .results-section,
+  .search-results,
+  .chip,
+  .search-list li {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transform: none !important;
+  }
+
+  button:active:not(:disabled) {
+    transform: none;
+  }
 }
