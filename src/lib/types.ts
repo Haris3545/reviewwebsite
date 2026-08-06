@@ -23,3 +23,15 @@ export interface ProductResult {
 export interface ReviewsResponse {
   results: ProductResult[];
 }
+
+export interface SearchResultItem {
+  asin: string;
+  title: string;
+  url: string;
+  stars: number | null;
+  reviewsCount: number | null;
+}
+
+export interface SearchResponse {
+  items: SearchResultItem[];
+}

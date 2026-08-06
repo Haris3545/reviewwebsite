@@ -1,4 +1,3 @@
-import * as cheerio from "cheerio";
 import type { ReviewRecord } from "../../src/lib/types";
 import { extractAsin, reviewsUrlForAsin } from "./asin";
 
@@ -30,6 +29,7 @@ function parseHelpful(text: string | undefined): number | null {
 }
 
 export async function fetchReviewsViaScraper(productUrl: string): Promise<ReviewRecord[]> {
+  const cheerio = await import("cheerio");
   const asin = extractAsin(productUrl);
   if (!asin) {
     throw new Error("Could not determine ASIN from URL.");
