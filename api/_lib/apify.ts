@@ -9,26 +9,14 @@ const MAX_REVIEWS_PER_PRODUCT = 100;
 
 interface ApifyRawItem {
   productAsin?: string;
-  productTitle?: string;
-  title?: string;
   ratingScore?: number;
-  rating?: number;
   reviewTitle?: string;
   reviewDescription?: string;
-  reviewText?: string;
   reviewedIn?: string;
   date?: string;
   isVerified?: boolean;
-  verified?: boolean;
   reviewReaction?: string;
-  userName?: string;
-  profileName?: string;
-  reviewer?: string;
-  name?: string;
-}
-
-function pick<T>(...values: (T | undefined | null)[]): T | undefined {
-  return values.find((v) => v !== undefined && v !== null);
+  username?: string;
 }
 
 function parseHelpfulVotes(reaction: string | undefined): number | null {
@@ -38,16 +26,19 @@ function parseHelpfulVotes(reaction: string | undefined): number | null {
 }
 
 function normalizeItem(item: ApifyRawItem, productUrl: string): ReviewRecord {
+  const asin = item.productAsin ?? "";
   return {
     productUrl,
-    productTitle: pick(item.productTitle, item.title) ?? "",
-    asin: item.productAsin ?? "",
-    reviewer: pick(item.userName, item.profileName, item.reviewer, item.name) ?? "Anonymous",
-    rating: pick(item.ratingScore, item.rating) ?? null,
+    // This actor doesn't return a product title field — fall back to the
+    // ASIN so the UI/exports always have something to group/label by.
+    productTitle: asin,
+    asin,
+    reviewer: item.username ?? "Anonymous",
+    rating: item.ratingScore ?? null,
     title: item.reviewTitle ?? "",
-    body: pick(item.reviewDescription, item.reviewText) ?? "",
-    date: pick(item.date, item.reviewedIn) ?? "",
-    verifiedPurchase: Boolean(pick(item.isVerified, item.verified)),
+    body: item.reviewDescription ?? "",
+    date: item.date ?? item.reviewedIn ?? "",
+    verifiedPurchase: Boolean(item.isVerified),
     helpfulVotes: parseHelpfulVotes(item.reviewReaction),
   };
 }
