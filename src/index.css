@@ -3,10 +3,9 @@
 
   --white: #ffffff;
   --black: #000000;
-  --eggshell: #80e8e3;
-  --eggshell-dark: #00bca5;
-  --eggshell-light: #bdf9f6;
   --mustard: #ffc931;
+  --mustard-dark: #ff8812;
+  --mustard-light: #ffedbb;
 
   font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
@@ -17,7 +16,7 @@
 
 body {
   margin: 0;
-  background: var(--eggshell-light);
+  background: var(--mustard-light);
   color: var(--black);
   font-weight: 300;
 }
@@ -33,7 +32,7 @@ body {
   width: 100%;
   max-width: 1140px;
   background: var(--white);
-  border: 3px solid var(--eggshell);
+  border: 3px solid var(--mustard);
   border-radius: 4px;
   padding: 40px 44px 56px;
 }
@@ -44,7 +43,7 @@ header .eyebrow {
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--eggshell-dark);
+  color: var(--mustard-dark);
 }
 
 header h1 {
@@ -57,7 +56,7 @@ header h1 {
 .highlight {
   font-style: italic;
   font-weight: 300;
-  background: var(--eggshell);
+  background: var(--mustard);
   padding: 0 8px;
   border-radius: 2px;
 }
@@ -93,7 +92,7 @@ header h1 {
 
 .tab.active {
   color: var(--black);
-  border-bottom-color: var(--eggshell-dark);
+  border-bottom-color: var(--mustard-dark);
 }
 
 .tab:hover {
@@ -118,7 +117,7 @@ header h1 {
 .input-section input[type="text"]:focus,
 .input-section select:focus {
   outline: none;
-  border-color: var(--eggshell-dark);
+  border-color: var(--mustard-dark);
 }
 
 .search-row {
@@ -157,17 +156,17 @@ button {
 }
 
 button.primary {
-  background: var(--eggshell);
-  border-color: var(--eggshell);
+  background: var(--mustard);
+  border-color: var(--mustard);
 }
 
 button.primary:hover:not(:disabled) {
-  background: var(--eggshell-dark);
-  border-color: var(--eggshell-dark);
+  background: var(--mustard-dark);
+  border-color: var(--mustard-dark);
 }
 
 button:hover:not(:disabled) {
-  background: var(--eggshell-light);
+  background: var(--mustard-light);
 }
 
 button:disabled {
@@ -211,7 +210,7 @@ button:disabled {
 }
 
 .search-list label:hover {
-  background: var(--eggshell-light);
+  background: var(--mustard-light);
 }
 
 .search-item-title {
@@ -240,7 +239,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   background: var(--white);
-  border: 1px solid var(--eggshell);
+  border: 1px solid var(--mustard);
   border-radius: 6px;
   padding: 8px 12px;
   font-size: 0.85rem;
@@ -290,7 +289,7 @@ td {
 }
 
 th {
-  background: var(--eggshell-light);
+  background: var(--mustard-light);
   font-weight: 500;
   position: sticky;
   top: 0;
