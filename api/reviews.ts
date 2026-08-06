@@ -2,8 +2,13 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import type { ProductResult } from "../src/lib/types";
 import { extractAsin } from "./_lib/asin.js";
 import { fetchReviewsViaApify } from "./_lib/apify.js";
+import { mapWithConcurrency } from "./_lib/concurrency.js";
 
 const MAX_URLS_PER_REQUEST = 25;
+// How many Apify Actor runs we allow in flight at once. Each run reserves
+// its own memory against the account's concurrent-memory limit, so this
+// stays conservative rather than firing the whole batch simultaneously.
+const CONCURRENT_APIFY_RUNS = 3;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
@@ -25,8 +30,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const apifyToken = process.env.APIFY_TOKEN;
     const allowScraperFallback = process.env.ALLOW_SCRAPER_FALLBACK === "true";
 
-    const results: ProductResult[] = await Promise.all(
-      urls.map(async (url: string): Promise<ProductResult> => {
+    const results: ProductResult[] = await mapWithConcurrency(
+      urls,
+      CONCURRENT_APIFY_RUNS,
+      async (url: string): Promise<ProductResult> => {
         const asin = extractAsin(url);
         try {
           if (apifyToken) {
@@ -68,7 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             error: err instanceof Error ? err.message : "Unknown error",
           };
         }
-      }),
+      },
     );
 
     res.status(200).json({ results });
