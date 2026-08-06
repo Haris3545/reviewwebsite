@@ -40,7 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           urls = ${Array.isArray(urls) ? urls : existing.urls},
           search_query = ${searchQuery !== undefined ? searchQuery : existing.search_query},
           search_domain = ${searchDomain !== undefined ? searchDomain : existing.search_domain},
-          results = ${results !== undefined ? JSON.stringify(results) : existing.results},
+          results = ${JSON.stringify(results !== undefined ? results : existing.results)},
           updated_at = now()
         WHERE id = ${id}
         RETURNING *
