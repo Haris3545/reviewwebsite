@@ -1,5 +1,5 @@
 import type { ReviewRecord } from "../../src/lib/types";
-import { extractAsin, reviewsUrlForAsin } from "./asin";
+import { extractAsin, reviewsUrlForAsin } from "./asin.js";
 
 /**
  * DIRECT SCRAPER FALLBACK — READ BEFORE ENABLING.

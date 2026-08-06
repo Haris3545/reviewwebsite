@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import type { ProductResult } from "../src/lib/types";
-import { extractAsin } from "./_lib/asin";
-import { fetchReviewsViaApify } from "./_lib/apify";
+import { extractAsin } from "./_lib/asin.js";
+import { fetchReviewsViaApify } from "./_lib/apify.js";
 
 const MAX_URLS_PER_REQUEST = 10;
 
@@ -44,7 +44,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             // Dynamically imported so a load-time failure in this module
             // (e.g. the cheerio dependency) can't crash the whole function
             // when the fallback isn't even in use.
-            const { fetchReviewsViaScraper } = await import("./_lib/scraper");
+            const { fetchReviewsViaScraper } = await import("./_lib/scraper.js");
             const reviews = await fetchReviewsViaScraper(url);
             return {
               url,

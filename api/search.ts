@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { searchAmazonProducts } from "./_lib/apifySearch";
+import { searchAmazonProducts } from "./_lib/apifySearch.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
