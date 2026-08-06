@@ -20,7 +20,7 @@ function parseUrls(raw: string): string[] {
 }
 
 export default function App() {
-  const [mode, setMode] = useState<"links" | "search">("links");
+  const [mode, setMode] = useState<"search" | "links">("search");
 
   const [urlsInput, setUrlsInput] = useState("");
   const [results, setResults] = useState<ProductResult[]>([]);
@@ -131,16 +131,16 @@ export default function App() {
 
         <nav className="mode-tabs">
           <button
-            className={mode === "links" ? "tab active" : "tab"}
-            onClick={() => setMode("links")}
-          >
-            Paste links
-          </button>
-          <button
             className={mode === "search" ? "tab active" : "tab"}
             onClick={() => setMode("search")}
           >
             Search by keyword
+          </button>
+          <button
+            className={mode === "links" ? "tab active" : "tab"}
+            onClick={() => setMode("links")}
+          >
+            Paste links
           </button>
         </nav>
 

@@ -3,7 +3,7 @@ import type { ProductResult } from "../src/lib/types";
 import { extractAsin } from "./_lib/asin.js";
 import { fetchReviewsViaApify } from "./_lib/apify.js";
 
-const MAX_URLS_PER_REQUEST = 10;
+const MAX_URLS_PER_REQUEST = 25;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {

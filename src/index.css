@@ -16,7 +16,7 @@
 
 body {
   margin: 0;
-  background: var(--mustard-light);
+  background: var(--white);
   color: var(--black);
   font-weight: 300;
 }
