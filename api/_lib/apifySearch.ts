@@ -15,7 +15,6 @@ export interface SearchResultItem {
 interface ApifySearchRawItem {
   asin?: string;
   title?: string;
-  url?: string;
   stars?: number;
   reviewsCount?: number;
 }
@@ -53,11 +52,13 @@ export async function searchAmazonProducts(
   }
 
   return items
-    .filter((item) => item.asin && item.url)
+    .filter((item) => item.asin)
     .map((item) => ({
       asin: item.asin!,
       title: item.title ?? "",
-      url: item.url!,
+      // The actor doesn't return a direct product URL, only the ASIN — build
+      // the canonical /dp/ link ourselves from the search domain.
+      url: `https://www.${domain}/dp/${item.asin}`,
       stars: item.stars ?? null,
       reviewsCount: item.reviewsCount ?? null,
     }));
