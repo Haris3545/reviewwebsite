@@ -33,6 +33,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       const existing = existingRows[0];
 
+      // results is JSONB — use COALESCE so Postgres keeps its current value
+      // when we pass NULL, instead of round-tripping whatever the driver
+      // handed back for it out through JS and re-serializing it. That
+      // round-trip is what corrupted stored reviews on a rename-only
+      // update previously. name/urls/search_query/search_domain are plain
+      // TEXT/TEXT[] columns, so passing the existing JS value straight back
+      // for those is fine.
       const { rows } = await sql`
         UPDATE projects
         SET
@@ -40,7 +47,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           urls = ${Array.isArray(urls) ? urls : existing.urls},
           search_query = ${searchQuery !== undefined ? searchQuery : existing.search_query},
           search_domain = ${searchDomain !== undefined ? searchDomain : existing.search_domain},
-          results = ${JSON.stringify(results !== undefined ? results : existing.results)},
+          results = COALESCE(${results !== undefined ? JSON.stringify(results) : null}, results),
           updated_at = now()
         WHERE id = ${id}
         RETURNING *
