@@ -5,7 +5,11 @@ import type { ReviewRecord } from "../../src/lib/types";
 // Verify the input/output schema there before relying on this in production —
 // third-party actor schemas can change without notice.
 const ACTOR_SLUG = "junglee~amazon-reviews-scraper";
-const MAX_REVIEWS_PER_PRODUCT = 100;
+// Kept modest so a single run finishes quickly enough to fit several runs
+// inside one request's time budget — raise if you want more reviews per
+// product and don't mind slower/more expensive runs.
+const MAX_REVIEWS_PER_PRODUCT = 40;
+const FETCH_TIMEOUT_MS = 40000;
 
 interface ApifyRawItem {
   productAsin?: string;
@@ -51,15 +55,23 @@ export async function fetchReviewsViaApify(
     token,
   )}`;
 
-  const res = await fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      productUrls: [{ url: productUrl }],
-      maxReviews: MAX_REVIEWS_PER_PRODUCT,
-      includeGdprSensitive: true,
-    }),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  let res: Response;
+  try {
+    res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        productUrls: [{ url: productUrl }],
+        maxReviews: MAX_REVIEWS_PER_PRODUCT,
+        includeGdprSensitive: true,
+      }),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");

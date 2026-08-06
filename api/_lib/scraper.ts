@@ -2,19 +2,17 @@ import type { ReviewRecord } from "../../src/lib/types";
 import { extractAsin, reviewsUrlForAsin } from "./asin.js";
 
 /**
- * DIRECT SCRAPER FALLBACK — READ BEFORE ENABLING.
- *
- * This fetches Amazon's review pages and parses the HTML directly. Amazon's
- * Terms of Service prohibit automated scraping of their site, and they run
- * active bot detection that can rate-limit or block the requesting IP.
- * This exists only as a fallback for when no APIFY_TOKEN is configured, is
- * OFF by default, and only runs if ALLOW_SCRAPER_FALLBACK=true is explicitly
- * set. Use at your own risk, for personal/non-commercial use, and expect it
- * to break whenever Amazon changes its markup.
+ * DIRECT FETCH — always tried first (see api/reviews.ts), falls back to
+ * Apify on failure. Fetches Amazon's review pages and parses the HTML
+ * directly. Amazon's Terms of Service prohibit automated scraping of their
+ * site, and they run active bot detection that can rate-limit or block the
+ * requesting IP — expect this to break whenever Amazon changes its markup.
  */
 
 const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
+const FETCH_TIMEOUT_MS = 8000;
 
 function parseRating(text: string | undefined): number | null {
   if (!text) return null;
@@ -36,12 +34,20 @@ export async function fetchReviewsViaScraper(productUrl: string): Promise<Review
   }
 
   const pageUrl = reviewsUrlForAsin(asin);
-  const res = await fetch(pageUrl, {
-    headers: {
-      "User-Agent": USER_AGENT,
-      "Accept-Language": "en-US,en;q=0.9",
-    },
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  let res: Response;
+  try {
+    res = await fetch(pageUrl, {
+      headers: {
+        "User-Agent": USER_AGENT,
+        "Accept-Language": "en-US,en;q=0.9",
+      },
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!res.ok) {
     throw new Error(`Amazon returned ${res.status} — page may be blocked or unavailable.`);
